@@ -5,7 +5,7 @@ from db.db_helper import connect
 from config import SECRET_KEY
 
 def register_user(name,password):
-    if name or password is None:
+    if not name or not password :
         raise ValueError("Name and Password required")
     
     conn=connect()
@@ -13,7 +13,13 @@ def register_user(name,password):
 
     try:
         hashed=bcrypt.hashpw(password.encode(),bcrypt.gensalt())
-        cursor.execute("INSERT INTO users(name,password) WHERE VALUES(?,?)",(name,hashed))
+        cursor.execute("INSERT INTO users(name,password) VALUES(?,?)",(name,hashed))
+        #Get the new user id
+        user_id=cursor.lastrowid #<-gets id just inserted
+
+        #Auto create Bank account
+        cursor.execute("INSERT INTO accounts(user_id, balance) VALUES(?,?)",
+            (user_id, 0))             # ← starts at 0")
         conn.commit()
     
     except Exception as e:
@@ -32,11 +38,12 @@ def login_user(name,password):
             
     conn.close()
 
-    user_id=user[0],
-    hashed=user[1]
-
     if not user:
         raise ValueError("Invlid Credentials")
+   
+    user_id=user[0]
+    hashed=user[1]
+
     
     if not bcrypt.checkpw(password.encode(),hashed):
         raise ValueError("Invalid Credentials")

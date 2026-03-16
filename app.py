@@ -1,46 +1,15 @@
-from db.db_helper import connect
+from flask import Flask
+from db.db_helper import init_db
+from routes.account_routes import (account)
+from routes.auth_routes import(auth)
 
+app=Flask(__name__)
 
-def deposit_money(name,amount):
-    if name and amount is None:
-        raise ValueError("Name and Amount Required")
-    
-    conn=connect()
-    cursor=conn.cursor()
-    
-    
-    cursor.execute("""
-       UPDATE accounts
-       SET balance= balance + ?
-       WHERE name=?
-     """,(name,amount))
-    
-    conn.commit()
+init_db()
 
-    cursor.execute("SELECT name,balance FROM accounts WHERE name=?",(name,))
-    user=cursor.fetchone()
-    
-    conn.close()
-    return user
+app.register_blueprint(account)
+app.register_blueprint(auth)
 
-def withdraw_money(name,amount):
-    if not name or amount is None:
-        raise ValueError("Name and amount required")
-    
-    conn=connect()
-    cursor=conn.cursor()
+if __name__=="__main__":
+    app.run()
 
-    cursor.execute("""
-    UPDATE accounts
-    SET balance= balance -?
-    WHERE name =?
-    AND balance = >?
-""",(amount,name,amount))
-    
-    conn.commit()
-
-    cursor.execute("SELECT name,balance FROM accounts WHERE name=?",(name,))
-    user=cursor.fetchone()
-    
-    conn.close()
-    return user

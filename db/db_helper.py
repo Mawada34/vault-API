@@ -21,8 +21,9 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS accounts(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    balance REAL UNIQUE NOT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id INTEGER NOT NULL,
+    balance REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(id)
  )
 """)
     
