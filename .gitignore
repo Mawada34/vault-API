@@ -1,0 +1,6 @@
+.env
+DEVLOG.md
+__pycache__/
+*.pyc
+*.db
+venv/

@@ -9,11 +9,15 @@ def init_db():
     conn=connect()
     cursor=conn.cursor()
 
+#"""Enabling Foreign Keys In SQlite"""
+    cursor.execute("PRAGMA foreign_keys=ON")
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT "customer",
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
@@ -27,7 +31,21 @@ def init_db():
  )
 """)
     
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS transactions(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER ,
+    receiver_id INTEGER,
+    amount REAL NOT NULL,
+    type TEXT NOT NULL,                
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,       
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)                  
+ )
+""")
+    
     conn.commit()
     conn.close()
 
     print("bank.db Created Successfuly🚀")
+

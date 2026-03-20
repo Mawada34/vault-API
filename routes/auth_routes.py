@@ -25,7 +25,3 @@ def login():
         return jsonify({"error":str(e)}),400
 
 
-
-
-
-

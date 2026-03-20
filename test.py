@@ -13,8 +13,6 @@ register = requests.post(
         "password": "mypassword123"
     }
 )
-print("REGISTER:", register.json())
-
 # Step 2 — Login
 login = requests.post(
     f"{BASE_URL}/login",
@@ -27,6 +25,16 @@ print("LOGIN:", login.json())
 
 # Step 3 — Get token
 token = login.json().get("token")
+
+
+register=requests.post(
+    f"{BASE_URL}/register",
+    json={
+        "name":"John",
+        "password":"Johnpass123"
+    }
+)
+print("REGISTER:", register.json())
 
 # Step 4 — Check balance
 balance = requests.get(
@@ -56,3 +64,32 @@ withdraw = requests.post(
     }
 )
 print("WITHDRAW:", withdraw.json())
+
+transfer=requests.post(
+    f"{BASE_URL}/transfer",
+    json={
+        "receiver_name":"John",
+        "amount":500
+          },
+    headers={
+        "Authorization": f"Bearer {token}"
+    }
+)
+print("TRANSFER:", transfer.json())
+
+print("\n5.Testing Admin Routes")
+
+admin_accounts=requests.get(
+    f"{BASE_URL}/accounts/admin",
+    headers={"Authorization":f"Bearer {token}"}
+)
+print("Admin Accounts Status.",admin_accounts.status_code)
+print("Admin Accounts Text." ,admin_accounts.text)
+#Test admin transactions
+
+admin_transactions=requests.get(
+    f"{BASE_URL}/transactions/admin",
+    headers={"Authorization":f"Bearer {token}"}
+)
+print("Admin Transactions",admin_transactions.json())
+

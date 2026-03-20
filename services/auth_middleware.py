@@ -9,27 +9,33 @@ def token_required(f):
         auth_header=request.headers.get("Authorization")
 
         if not auth_header:
-            return jsonify({"error":"Token missing"}),401
+            return jsonify({"error":"Token is Missing"}),401
         
         try:
             token=auth_header.split(" ")[1]
         except IndexError:
-            return jsonify({"error":"Token Formt Invalid"}),401
+            return jsonify({"error":"Invalid Token Format"}),401
         
-
         try:
             data=jwt.decode(
-                
-                    token,
-                    SECRET_KEY,
-                    algorithms=["HS256"]             
+                token,
+                SECRET_KEY,
+                algorithms=["HS256"]
             )
         except jwt.ExpiredSignatureError:
-            return jsonify({"error":"Token Is Expired Login Again"}),401
+            return jsonify({"error":"Expired Token.Login Again"}),401
+        
+        except jwt.InvalidTokenError:
+            return jsonify({"error":"Invalid Token"}),401
         
         user_id=data.get("user_id")
 
         return f(user_id,*args,**kwargs)
-    
-        
-    return decorated
+    return decorated    
+
+
+
+
+
+
+
